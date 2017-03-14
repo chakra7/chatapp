@@ -1,74 +1,106 @@
 import React from "react"
 import ReactDOM from "react-dom"
 
-var MessageWindow = React.createClass({
-  getInitialState : function(){
-    return {loading:true, newMessage:false}
-  },
+class MessageWindow extends React.Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      loading : true, 
+      messages : []
+    }
+    //not really sure why
+    this.handleOnLoad = this.handleOnLoad.bind(this)
+    this.addMessage = this.addMessage.bind(this)
+  }
 
   //placeholder. replace with actual data fetching
-  componentDidMount : function(){
+  componentDidMount(){
     setTimeout(this.handleOnLoad, 2000)
-  },
+  }
 
-  handleOnLoad : function(){
-    this.setState({loading : false})
-  },
+  handleOnLoad(){
+    this.setState({
+      loading : false,
+      //dummy messages. real messages need to come from server
+      messages : [
+        'Sampling',
+        'Killing',
+        'Softly',
+        'Loving'
+      ]
+    })
+  }
 
-  renderLoading : function(){
+  renderLoading(){
     return(
       <div className="messageWindowDiv">
-        <Message>Loading</Message>
+        <h2>Loading</h2>
       </div>
     )
-  },
+  }
 
-  renderLoaded : function(){
+  renderLoaded(){
     return (
       <div className="messageWindowDiv">
-        <Message>Sampling</Message>
-        <Message>Killing</Message>
-        <Message>Softly</Message>
-        <Message>Loving</Message>
+        {
+          this.state.messages.map((msgbody, msgkey)=>(
+            <Message key={msgkey}>{msgbody}</Message>)
+          )
+        }
+        <textarea ref="messageText"></textarea>
+        <button onClick={this.addMessage}>Send</button>
       </div>
     )
-  },
+  }
 
-  render : function(){
+  render(){
     if(this.state.loading) return this.renderLoading()
     else return this.renderLoaded()
-  },
-  
-  appendMessage : function(msg){
-    
   }
-});
+
+  addMessage(){
+    //get message from textarea
+    var message = this.refs.messageText.value
+    //only if message is non empty, append it to messages
+    if(message.length != 0){
+      var arr = this.state.messages
+      arr.push(message)
+      this.setState({
+        loading : false,
+        messages : arr
+      })
+      //reset textarea
+      this.refs.messageText.value = ''
+    }
+  }
+}
  
-var Message = React.createClass({
-  render : function(){
+class Message extends React.Component {
+  render(){
     return (
       <div className="messageDiv">
         <p>{this.props.children}</p>
       </div>
     )
   }
-});
+}
 
-var MessageBox = React.createClass({
-  getInitialState : function(){
-    return {empty:true}
-  },
+class MessageBox extends React.Component {
+  constructor(props){
+    super(props)
+    this.state = {empty:true}
+  }
 
-  addMessage : function(){
+  addMessage(){
     //this should create a new Message component, and append it to MessageWindow
     //only if message is non empty
     var message = this.refs.messageText.value
     if(message.length != 0){
-      return <Message>{message}</Message>
+      
     }
-  },
+  }
 
-  render : function(){
+  render(){
     return (
       <div className="messageBoxDiv">
         <textarea ref="messageText"></textarea>
@@ -76,12 +108,11 @@ var MessageBox = React.createClass({
       </div>
     )
   }
-});
+}
  
 ReactDOM.render(
   <div>
     <MessageWindow/>
-    <MessageBox/>
   </div>,
   document.querySelector("#container")
 );  

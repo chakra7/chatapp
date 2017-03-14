@@ -21683,6 +21683,8 @@ module.exports = traverseAllChildren;
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = __webpack_require__(80);
 
 var _react2 = _interopRequireDefault(_react);
@@ -21693,86 +21695,178 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var MessageBox = _react2.default.createClass({
-  displayName: "MessageBox",
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  getInitialState: function getInitialState() {
-    return { loading: true };
-  },
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MessageWindow = function (_React$Component) {
+  _inherits(MessageWindow, _React$Component);
+
+  function MessageWindow(props) {
+    _classCallCheck(this, MessageWindow);
+
+    var _this = _possibleConstructorReturn(this, (MessageWindow.__proto__ || Object.getPrototypeOf(MessageWindow)).call(this, props));
+
+    _this.state = {
+      loading: true,
+      messages: []
+    };
+    //not really sure why
+    _this.handleOnLoad = _this.handleOnLoad.bind(_this);
+    _this.addMessage = _this.addMessage.bind(_this);
+    return _this;
+  }
 
   //placeholder. replace with actual data fetching
-  componentDidMount: function componentDidMount() {
-    setTimeout(this.handleOnLoad, 2000);
-  },
 
-  handleOnLoad: function handleOnLoad() {
-    this.setState({ loading: false });
-  },
 
-  renderLoading: function renderLoading() {
-    return _react2.default.createElement(
-      "div",
-      { className: "messageBoxDiv" },
-      _react2.default.createElement(
-        Message,
-        null,
-        "Loading"
-      )
-    );
-  },
+  _createClass(MessageWindow, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      setTimeout(this.handleOnLoad, 2000);
+    }
+  }, {
+    key: "handleOnLoad",
+    value: function handleOnLoad() {
+      this.setState({
+        loading: false,
+        //dummy messages. real messages need to come from server
+        messages: ['Sampling', 'Killing', 'Softly', 'Loving']
+      });
+    }
+  }, {
+    key: "renderLoading",
+    value: function renderLoading() {
+      return _react2.default.createElement(
+        "div",
+        { className: "messageWindowDiv" },
+        _react2.default.createElement(
+          "h2",
+          null,
+          "Loading"
+        )
+      );
+    }
+  }, {
+    key: "renderLoaded",
+    value: function renderLoaded() {
+      return _react2.default.createElement(
+        "div",
+        { className: "messageWindowDiv" },
+        this.state.messages.map(function (msgbody, msgkey) {
+          return _react2.default.createElement(
+            Message,
+            { key: msgkey },
+            msgbody
+          );
+        }),
+        _react2.default.createElement("textarea", { ref: "messageText" }),
+        _react2.default.createElement(
+          "button",
+          { onClick: this.addMessage },
+          "Send"
+        )
+      );
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      if (this.state.loading) return this.renderLoading();else return this.renderLoaded();
+    }
+  }, {
+    key: "addMessage",
+    value: function addMessage() {
+      //get message from textarea
+      var message = this.refs.messageText.value;
+      //only if message is non empty, append it to messages
+      if (message.length != 0) {
+        var arr = this.state.messages;
+        arr.push(message);
+        this.setState({
+          loading: false,
+          messages: arr
+        });
+        //reset textarea
+        this.refs.messageText.value = '';
+      }
+    }
+  }]);
 
-  renderLoaded: function renderLoaded() {
-    return _react2.default.createElement(
-      "div",
-      { className: "messageBoxDiv" },
-      _react2.default.createElement(
-        Message,
-        null,
-        "Sampling"
-      ),
-      _react2.default.createElement(
-        Message,
-        null,
-        "Killing"
-      ),
-      _react2.default.createElement(
-        Message,
-        null,
-        "Softly"
-      ),
-      _react2.default.createElement(
-        Message,
-        null,
-        "Loving"
-      )
-    );
-  },
+  return MessageWindow;
+}(_react2.default.Component);
 
-  render: function render() {
-    if (this.state.loading) return this.renderLoading();else return this.renderLoaded();
+var Message = function (_React$Component2) {
+  _inherits(Message, _React$Component2);
+
+  function Message() {
+    _classCallCheck(this, Message);
+
+    return _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).apply(this, arguments));
   }
-});
 
-var Message = _react2.default.createClass({
-  displayName: "Message",
+  _createClass(Message, [{
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        { className: "messageDiv" },
+        _react2.default.createElement(
+          "p",
+          null,
+          this.props.children
+        )
+      );
+    }
+  }]);
 
-  render: function render() {
-    return _react2.default.createElement(
-      "div",
-      { className: "messageDiv" },
-      _react2.default.createElement(
-        "p",
-        null,
-        this.props.children
-      )
-    );
+  return Message;
+}(_react2.default.Component);
+
+var MessageBox = function (_React$Component3) {
+  _inherits(MessageBox, _React$Component3);
+
+  function MessageBox(props) {
+    _classCallCheck(this, MessageBox);
+
+    var _this3 = _possibleConstructorReturn(this, (MessageBox.__proto__ || Object.getPrototypeOf(MessageBox)).call(this, props));
+
+    _this3.state = { empty: true };
+    return _this3;
   }
-});
+
+  _createClass(MessageBox, [{
+    key: "addMessage",
+    value: function addMessage() {
+      //this should create a new Message component, and append it to MessageWindow
+      //only if message is non empty
+      var message = this.refs.messageText.value;
+      if (message.length != 0) {}
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        { className: "messageBoxDiv" },
+        _react2.default.createElement("textarea", { ref: "messageText" }),
+        _react2.default.createElement(
+          "button",
+          { onClick: this.addMessage },
+          "Send"
+        )
+      );
+    }
+  }]);
+
+  return MessageBox;
+}(_react2.default.Component);
 
 _reactDom2.default.render(_react2.default.createElement(
   "div",
   null,
-  _react2.default.createElement(MessageBox, null)
+  _react2.default.createElement(MessageWindow, null)
 ), document.querySelector("#container"));
 
 /***/ })
